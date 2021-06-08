@@ -21,6 +21,18 @@
              label {
                font-weight: bold;
              }
+ 
+           .hh3{
+            color: grey;
+          }
+           .bb{
+             font-weight: bold;
+
+           }
+           .bb2{
+             font-weight: bolder;
+           }
+             
              
              input,
              textarea {

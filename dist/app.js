@@ -1,5 +1,39 @@
 "use strict";
 console.log('watch');
+class Project {
+    constructor(id, title, description, people, status) {
+    }
+}
+class StateManagement {
+    constructor() {
+        this.checkStatus = 'active';
+        this.pushInput = [];
+        this.getList = [];
+        this.addInput = (title, description, people, status) => {
+            let dataPacket = {
+                id: Math.random().toString(),
+                title: title,
+                description: description,
+                people: people,
+                status: status
+            };
+            this.checkStatus = status;
+            this.pushInput.push(dataPacket);
+            console.log(...this.pushInput);
+        };
+    }
+    static getInstance() {
+        if (this.instance) {
+            return this.instance;
+        }
+        this.instance = new StateManagement();
+        return this.instance;
+    }
+    getListOfProject() {
+        return [...this.pushInput];
+    }
+}
+const projectState = StateManagement.getInstance();
 const formElements = document.getElementById('project-input');
 const listElements = document.getElementById('app');
 const importNode = document.importNode(formElements.content, true);
@@ -47,12 +81,70 @@ class ProjectList {
         this.element.id = `${this.type}-projects`;
         this.attach();
         this.renderContent();
+        this.configure();
+    }
+    dragStartHandler(event) {
+        console.log(event);
+    }
+    dragEndHandler(_) {
+        console.log('Drag End');
+    }
+    dragOverHandler(_) {
+        let re = this.element;
+        console.log(re);
+        const listEl = this.element.querySelector('ul');
+        console.log(listEl);
+        listEl.classList.add('droppable');
+        console.log(listEl);
+    }
+    dragLeaveHandler(_) {
+    }
+    dropHandler(_) { }
+    configure() {
+        this.element.addEventListener('dragstart', this.dragStartHandler);
+        this.element.addEventListener('dragend', this.dragEndHandler);
+        this.element.addEventListener('dragover', this.dragOverHandler);
+        this.element.addEventListener('dragleave', this.dragLeaveHandler);
+        this.element.addEventListener('drop', this.dropHandler);
     }
     renderContent() {
         const listId = `${this.type}-projects-list`;
         this.element.querySelector('ul').id = listId;
         this.element.querySelector('h2').textContent =
             this.type.toUpperCase() + ' PROJECTS';
+    }
+    renderInput() {
+        const projects = projectState.getListOfProject();
+        let listEl = document.getElementById(`${this.type}-projects-list`);
+        projects.filter(statusName => {
+            if (projectState.checkStatus === 'active') {
+                console.log(projectState.checkStatus);
+                listEl = document.getElementById(`${projectState.checkStatus}-projects-list`);
+                listEl.innerHTML = '';
+                for (let list of projects) {
+                    let li = document.createElement('li');
+                    li.draggable = true;
+                    let heading = document.createElement('h2');
+                    heading.style.color = '#ff0062';
+                    let people = document.createElement('p');
+                    people.style.color = 'grey';
+                    let description = document.createElement('b');
+                    description.style.fontWeight = '900px';
+                    if (list) {
+                        li.value = list.id;
+                        heading.textContent = list.title;
+                        people.textContent = `${list.people} person assigned `;
+                        description.textContent = list.description;
+                        li.appendChild(heading);
+                        li.appendChild(description);
+                        li.appendChild(people);
+                        listEl.appendChild(li);
+                        console.log(people.textContent);
+                    }
+                }
+            }
+            console.log('runnnig');
+        });
     }
     attach() {
         this.hostElement.insertAdjacentElement('beforeend', this.element);
@@ -96,6 +188,9 @@ const submitHandler = (event) => {
     if (Array.isArray(gatherValue)) {
         const [title, discription, people] = gatherValue;
         console.log(title, discription, people);
+        projectState.addInput(title, discription, people, 'active');
+        active.renderInput();
+        finished.renderInput();
     }
 };
 element.addEventListener('submit', submitHandler);
