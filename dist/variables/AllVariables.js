@@ -1,0 +1,10 @@
+export const formElements = document.getElementById('project-input');
+export const listElements = document.getElementById('app');
+export const importNode = document.importNode(formElements.content, true);
+export const element = importNode.firstElementChild;
+export const title = element.querySelector('.title');
+export const description = element.querySelector('.description');
+export const people = element.querySelector('.people');
+export const projectListElements = document.getElementById('project-list');
+export const divElement = document.getElementById('app');
+//# sourceMappingURL=AllVariables.js.map
